@@ -1,27 +1,61 @@
 // create a variable for the sound file
-var soundFile;
+// var soundFile, fft;
+
+// function setup() {
+//    createCanvas(710,400);
+//    noFill();
+//    if ( soundFile.isPlaying() ) { // .isPlaying() returns a boolean
+//     soundFile.pause(); // .play() will resume from .pause() position
+//    } else {
+//     soundFile.play();
+//     fft = new p5.FFT();
+//     fft.setInput(soundFile);
+//    }
+
+// }
+
+// function draw() {
+//    background(200);
+
+//    var spectrum = fft.analyze();
+
+//    beginShape();
+//    for (i = 0; i<spectrum.length; i++) {
+//     vertex(i, map(spectrum[i], 0, 255, height, 0) );
+//    }
+//    endShape();
+// }
+
+// function preload() {
+//   soundFile = loadSound('./assets/piano.mp3');
+// }
+
+
+var song, analyzer;
+
+function preload() {
+  song = loadSound('./assets/piano.mp3');
+}
 
 function setup() {
-  createCanvas(400, 400);
-  background(0);
+  createCanvas(710, 200);
+  song.loop();
 
-  // create a SoundFile
-  soundFile = loadSound( ['./assets/piano.mp3'] );
+  // create a new Amplitude analyzer
+  analyzer = new p5.Amplitude(0.5);
 
-  createP('Press any key to play the sound');
+  // Patch the input to an volume analyzer
+  analyzer.setInput(song);
 }
 
-// when a key is pressed...
-function keyPressed() {
+function draw() {
+  background(255);
 
-  // play the sound file
-  soundFile.play();
+  // Get the average (root mean square) amplitude
+  var rms = analyzer.getLevel();
+  fill(127);
+  stroke(0);
 
-  // also make the background yellow
-  background(255, 255, 0);
-}
-
-function keyReleased() {
-  // make the background black again when the key is released
-  background(0);
+  // Draw an ellipse with size based on volume
+  ellipse(width/2, height/2, 10+rms*200, 10+rms*200);
 }
